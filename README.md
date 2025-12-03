@@ -1,73 +1,80 @@
-# Welcome to your Lovable project
+# SpeakUp - Communication Skills Coach
 
-## Project info
+A modern web application for improving spoken communication skills through practice, feedback, and progress tracking.
 
-**URL**: https://lovable.dev/projects/637acec2-6b85-411e-9c0b-13310a995f55
+## Features
 
-## How can I edit this code?
+- **Practice Sessions**: Record audio or video of yourself speaking on various topics
+- **Topic Selection**: Choose from predefined topics or get a random topic
+- **Mock AI Feedback**: Receive instant feedback on fluency, clarity, and confidence (mock data for demo)
+- **Session History**: Review all past practice sessions with filtering options
+- **Progress Tracking**: View stats including total sessions, practice time, average scores, and streaks
+- **Daily Goals**: Set and track daily practice minutes
+- **Customizable Settings**: Adjust focus areas and preferences
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- React 18 + TypeScript
+- Vite for bundling
+- TailwindCSS for styling
+- React Router for navigation
+- LocalStorage for data persistence
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/637acec2-6b85-411e-9c0b-13310a995f55) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Install dependencies
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+├── api/
+│   └── mockAnalysis.ts      # Mock AI analysis functions (replace with real AI later)
+├── components/
+│   ├── common/              # Reusable UI components
+│   ├── dashboard/           # Dashboard-specific components
+│   ├── history/             # History page components
+│   ├── layout/              # Layout components (Navbar, PageContainer)
+│   ├── practice/            # Practice page components (recorders, selectors)
+│   └── ui/                  # Shadcn UI components
+├── data/
+│   └── localStorageClient.ts # Data access layer (replace with MongoDB later)
+├── hooks/
+│   ├── useRecorder.ts       # Audio/video recording hook
+│   ├── useSessions.ts       # Session management hook
+│   └── useSettings.ts       # Settings management hook
+├── pages/
+│   ├── Index.tsx            # Dashboard
+│   ├── Practice.tsx         # Practice recording page
+│   ├── History.tsx          # Session history
+│   ├── SessionDetail.tsx    # Individual session view
+│   └── Settings.tsx         # User preferences
+└── types/
+    └── session.ts           # TypeScript interfaces
+```
 
-**Use GitHub Codespaces**
+## Future Integration Points
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Replace localStorage with MongoDB
+Edit `src/data/localStorageClient.ts` to connect to your backend:
+- `getSettings()` / `saveSettings()`
+- `getSessions()` / `addSession()` / `getSessionById()`
 
-## What technologies are used for this project?
+### Add Real AI Analysis
+Edit `src/api/mockAnalysis.ts`:
+- Integrate Whisper for speech-to-text
+- Use GPT for feedback generation
+- Replace `analyzeSessionMock()` with real API calls
 
-This project is built with:
+## License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/637acec2-6b85-411e-9c0b-13310a995f55) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT
