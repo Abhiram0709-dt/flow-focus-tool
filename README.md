@@ -33,6 +33,21 @@ npm run dev
 npm run build
 ```
 
+## Deployment
+
+This app is ready to deploy to Vercel. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deploy to Vercel:
+
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com) and import your repository
+3. Add environment variables:
+   - `VITE_API_BASE_URL` - Your backend API URL
+   - `VITE_TURNSTILE_SITE_KEY` - Cloudflare Turnstile site key
+4. Deploy!
+
+The app will be live with a domain you can use for Cloudflare Turnstile configuration.
+
 ## Project Structure
 
 ```
