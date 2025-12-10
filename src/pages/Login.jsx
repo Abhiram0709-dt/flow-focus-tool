@@ -20,7 +20,7 @@ import { Github } from "lucide-react";
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-// Debug: Log site key on load
+// Debug logs
 console.log("Turnstile Site Key:", TURNSTILE_SITE_KEY);
 console.log("Site Key Length:", TURNSTILE_SITE_KEY.length);
 console.log("API Base URL:", API_BASE_URL);
