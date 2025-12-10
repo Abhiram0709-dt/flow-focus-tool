@@ -20,6 +20,10 @@ import { Github } from "lucide-react";
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+console.log("=== SIGNUP PAGE ===" );
+console.log("API Base URL:", API_BASE_URL);
+console.log("===================");
+
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
