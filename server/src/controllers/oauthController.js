@@ -6,16 +6,19 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 // OAuth callback handler
 export const oauthCallback = async (req, res) => {
   try {
+    console.log(`[OAUTH_CALLBACK] Processing OAuth callback`);
     const user = req.user;
     if (!user) {
+      console.log(`[OAUTH_CALLBACK] No user found in request`);
       return res.redirect(`${CLIENT_ORIGIN}/login?error=oauth_failed`);
     }
 
+    console.log(`[OAUTH_CALLBACK] User authenticated: ${user.email}`);
     const token = generateToken(user);
+    console.log(`[OAUTH_CALLBACK] Token generated, redirecting to: ${CLIENT_ORIGIN}/auth/callback`);
     return res.redirect(`${CLIENT_ORIGIN}/auth/callback?token=${token}`);
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("OAuth callback error", error);
+    console.error("[OAUTH_CALLBACK ERROR]", error);
     return res.redirect(`${CLIENT_ORIGIN}/login?error=oauth_failed`);
   }
 };
