@@ -1,52 +1,128 @@
-# SpeakUp - Communication Skills Coach
+# Flow Focus Tool - Communication Skills Coach
 
-A modern web application for improving spoken communication skills through practice, feedback, and progress tracking.
+A modern web application for improving spoken communication skills through AI-powered practice, feedback, and progress tracking.
 
-## Features
+## ✨ Features
 
-- **Practice Sessions**: Record audio or video of yourself speaking on various topics
-- **Topic Selection**: Choose from predefined topics or get a random topic
-- **Mock AI Feedback**: Receive instant feedback on fluency, clarity, and confidence (mock data for demo)
-- **Session History**: Review all past practice sessions with filtering options
-- **Progress Tracking**: View stats including total sessions, practice time, average scores, and streaks
-- **Daily Goals**: Set and track daily practice minutes
-- **Customizable Settings**: Adjust focus areas and preferences
+- **🎙️ Practice Sessions**: Record audio or video of yourself speaking on various topics
+- **📚 Topic Selection**: Choose from predefined topics or practice with custom topics
+- **🤖 AI-Powered Feedback**: Get instant feedback on fluency, clarity, and confidence using Google Gemini AI
+- **📊 Session History**: Review all past practice sessions with detailed analytics
+- **📈 Progress Tracking**: View comprehensive stats including total sessions, practice time, and average scores
+- **🎯 Daily Goals**: Set and track daily practice minutes
+- **⚙️ Customizable Settings**: Adjust focus areas and preferences
+- **🔐 Secure Authentication**: Login with Google or GitHub OAuth
+- **☁️ Cloud Storage**: Media files stored securely on Cloudinary
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- React 18 + TypeScript
+### Frontend
+- React 18 + JavaScript
 - Vite for bundling
-- TailwindCSS for styling
+- TailwindCSS + shadcn/ui for styling
 - React Router for navigation
-- LocalStorage for data persistence
+- Axios for API calls
 
-## Getting Started
+### Backend
+- Node.js + Express
+- MongoDB + Mongoose
+- Passport.js for OAuth
+- JWT for authentication
+- Cloudinary for media storage
+- Google Gemini AI for feedback generation
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ installed
+- MongoDB instance (local or Atlas)
+- Cloudinary account
+- Google Gemini API key
+- OAuth credentials (Google & GitHub)
+
+### Installation
 
 ```bash
-# Install dependencies
+# Clone the repository
+git clone https://github.com/Abhiram0709-dt/flow-focus-tool.git
+cd flow-focus-tool
+
+# Install frontend dependencies
 npm install
 
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
+# Install backend dependencies
+cd server
+npm install
+cd ..
 ```
 
-## Deployment
+### Environment Setup
 
-This app is ready to deploy to Vercel. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+#### Frontend (.env in root)
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_GEMINI_API_KEY=your-gemini-api-key
+VITE_TURNSTILE_SITE_KEY=your-turnstile-site-key
+```
 
-### Quick Deploy to Vercel:
+#### Backend (server/.env)
+```env
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/flow-focus-tool
+JWT_SECRET=your-jwt-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+GEMINI_API_KEY=your-gemini-api-key
+SERVER_URL=http://localhost:5000
+CLIENT_ORIGIN=http://localhost:5173
+```
 
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com) and import your repository
-3. Add environment variables:
-   - `VITE_API_BASE_URL` - Your backend API URL
-   - `VITE_TURNSTILE_SITE_KEY` - Cloudflare Turnstile site key
-4. Deploy!
+### Running the Application
 
-The app will be live with a domain you can use for Cloudflare Turnstile configuration.
+```bash
+# Start backend server (from root directory)
+npm run server
+
+# In another terminal, start frontend
+npm run dev
+```
+
+Visit `http://localhost:5173` in your browser.
+
+## 📦 Deployment
+
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for comprehensive deployment instructions.
+
+### Quick Deploy
+
+**Frontend (Vercel):**
+1. Connect your GitHub repository to Vercel
+2. Set environment variables
+3. Deploy automatically on push to main
+
+**Backend (Render/Railway):**
+1. Connect your GitHub repository
+2. Set root directory to `server`
+3. Configure environment variables
+4. Deploy
+
+### Required OAuth Setup for Production
+
+#### Google OAuth
+1. Go to Google Cloud Console
+2. Create OAuth credentials
+3. Add production callback URL: `https://your-backend.onrender.com/api/auth/google/callback`
+
+#### GitHub OAuth  
+1. Go to GitHub Developer Settings
+2. Create OAuth App
+3. Add production callback URL: `https://your-backend.onrender.com/api/auth/github/callback`
 
 ## Project Structure
 
