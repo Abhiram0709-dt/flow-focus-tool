@@ -18,11 +18,12 @@ import { toast } from "sonner";
 import { Github } from "lucide-react";
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Debug: Log site key on load
 console.log("Turnstile Site Key:", TURNSTILE_SITE_KEY);
 console.log("Site Key Length:", TURNSTILE_SITE_KEY.length);
+console.log("API Base URL:", API_BASE_URL);
 
 export default function Login() {
   const [email, setEmail] = useState("");
