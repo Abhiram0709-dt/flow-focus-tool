@@ -48,52 +48,43 @@ git clone https://github.com/Abhiram0709-dt/flow-focus-tool.git
 cd flow-focus-tool
 
 # Install frontend dependencies
+cd frontend
 npm install
+cd ..
 
 # Install backend dependencies
-cd server
+cd backend
 npm install
 cd ..
 ```
 
 ### Environment Setup
 
-#### Frontend (.env in root)
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_GEMINI_API_KEY=your-gemini-api-key
-VITE_TURNSTILE_SITE_KEY=your-turnstile-site-key
+Copy each app's `.env.example` to `.env` and fill in real values:
+
+```bash
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
 ```
 
-#### Backend (server/.env)
-```env
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/flow-focus-tool
-JWT_SECRET=your-jwt-secret
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-GITHUB_CLIENT_ID=your-github-client-id
-GITHUB_CLIENT_SECRET=your-github-client-secret
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-GEMINI_API_KEY=your-gemini-api-key
-SERVER_URL=http://localhost:5000
-CLIENT_ORIGIN=http://localhost:5173
+`backend/generate-secrets.js` can generate random `JWT_SECRET`/`SESSION_SECRET` values:
+```bash
+node backend/generate-secrets.js
 ```
 
 ### Running the Application
 
 ```bash
-# Start backend server (from root directory)
-npm run server
+# Terminal 1: backend
+cd backend
+npm run dev
 
-# In another terminal, start frontend
+# Terminal 2: frontend
+cd frontend
 npm run dev
 ```
 
-Visit `http://localhost:5173` in your browser.
+Visit `http://localhost:8080` (or `http://localhost:5173`, depending on your Vite config) in your browser.
 
 ## 📦 Deployment
 
@@ -103,12 +94,13 @@ See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for comprehensive deployment in
 
 **Frontend (Vercel):**
 1. Connect your GitHub repository to Vercel
-2. Set environment variables
-3. Deploy automatically on push to main
+2. Set the project's Root Directory to `frontend`
+3. Set environment variables
+4. Deploy automatically on push to main
 
 **Backend (Render/Railway):**
 1. Connect your GitHub repository
-2. Set root directory to `server`
+2. Set root directory to `backend`
 3. Configure environment variables
 4. Deploy
 
@@ -127,44 +119,32 @@ See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for comprehensive deployment in
 ## Project Structure
 
 ```
-src/
-├── api/
-│   └── mockAnalysis.ts      # Mock AI analysis functions (replace with real AI later)
-├── components/
-│   ├── common/              # Reusable UI components
-│   ├── dashboard/           # Dashboard-specific components
-│   ├── history/             # History page components
-│   ├── layout/              # Layout components (Navbar, PageContainer)
-│   ├── practice/            # Practice page components (recorders, selectors)
-│   └── ui/                  # Shadcn UI components
-├── data/
-│   └── localStorageClient.ts # Data access layer (replace with MongoDB later)
-├── hooks/
-│   ├── useRecorder.ts       # Audio/video recording hook
-│   ├── useSessions.ts       # Session management hook
-│   └── useSettings.ts       # Settings management hook
-├── pages/
-│   ├── Index.tsx            # Dashboard
-│   ├── Practice.tsx         # Practice recording page
-│   ├── History.tsx          # Session history
-│   ├── SessionDetail.tsx    # Individual session view
-│   └── Settings.tsx         # User preferences
-└── types/
-    └── session.ts           # TypeScript interfaces
+frontend/
+├── src/
+│   ├── api/                 # Axios client + API calls to the backend
+│   ├── components/          # common/, dashboard/, history/, layout/, practice/, ui/
+│   ├── contexts/            # AuthContext
+│   ├── data/                # localStorageClient (legacy, mostly superseded by the backend)
+│   ├── hooks/                # useRecorder, useSessions, useSettings, ...
+│   ├── pages/                # Index, Practice, History, SessionDetail, Settings, Login, ...
+│   └── types/
+├── public/
+├── index.html
+├── vite.config.js
+├── package.json
+└── .env.example
+
+backend/
+├── src/
+│   ├── config/               # db, passport, cloudinary
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/                # User, Session, Settings
+│   ├── routes/
+│   └── index.js
+├── package.json
+└── .env.example
 ```
-
-## Future Integration Points
-
-### Replace localStorage with MongoDB
-Edit `src/data/localStorageClient.ts` to connect to your backend:
-- `getSettings()` / `saveSettings()`
-- `getSessions()` / `addSession()` / `getSessionById()`
-
-### Add Real AI Analysis
-Edit `src/api/mockAnalysis.ts`:
-- Integrate Whisper for speech-to-text
-- Use GPT for feedback generation
-- Replace `analyzeSessionMock()` with real API calls
 
 ## License
 

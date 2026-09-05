@@ -12,11 +12,10 @@ dist
 dist-ssr
 *.local
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-src/.env
+# Environment variables (keep real .env* files out of git; templates are allowed)
+.env*
+!.env.example
+!**/.env.example
 
 # Deployment
 .vercel
