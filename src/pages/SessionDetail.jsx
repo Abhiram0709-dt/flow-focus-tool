@@ -6,6 +6,8 @@ import { ScoreCircle } from "@/components/common/ScoreCircle";
 import { Badge } from "@/components/common/Badge";
 import { Button } from "@/components/ui/button";
 import { useSessions } from "@/hooks/useSessions.js";
+import { uploadSessionToYoutube } from "@/api/serverApi.js";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -16,6 +18,9 @@ import {
   AlertTriangle,
   Lightbulb,
   CheckCircle,
+  Youtube,
+  Loader2,
+  ExternalLink,
 } from "lucide-react";
 
 function formatDuration(seconds) {
@@ -29,6 +34,7 @@ export default function SessionDetail() {
   const navigate = useNavigate();
   const { findSession } = useSessions();
   const [session, setSession] = useState(null);
+  const [uploadingToYoutube, setUploadingToYoutube] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -55,6 +61,29 @@ export default function SessionDetail() {
 
     load();
   }, [id, findSession, navigate]);
+
+  const handleUploadToYoutube = async () => {
+    setUploadingToYoutube(true);
+    try {
+      const youtube = await uploadSessionToYoutube(session._id);
+      setSession((prev) => ({ ...prev, youtube }));
+      toast.success("Uploaded to YouTube as an unlisted video!");
+    } catch (error) {
+      if (error?.response?.data?.code === "YOUTUBE_NOT_CONNECTED") {
+        toast.error("Connect your YouTube account first", {
+          action: {
+            label: "Go to Settings",
+            onClick: () => navigate("/settings"),
+          },
+        });
+      } else {
+        toast.error("Failed to upload video to YouTube");
+      }
+      console.error(error);
+    } finally {
+      setUploadingToYoutube(false);
+    }
+  };
 
   if (!session) {
     return (
@@ -111,9 +140,39 @@ export default function SessionDetail() {
 
           {/* Media Player */}
           <div className="bg-card rounded-2xl p-6 border border-border">
-            <h2 className="text-lg font-semibold text-foreground mb-4">
-              Recording
-            </h2>
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 className="text-lg font-semibold text-foreground">
+                Recording
+              </h2>
+              {session.mode === "video" && (
+                session.youtube?.url ? (
+                  <a
+                    href={session.youtube.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                  >
+                    <Youtube className="w-4 h-4" />
+                    View on YouTube
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleUploadToYoutube}
+                    disabled={uploadingToYoutube}
+                  >
+                    {uploadingToYoutube ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Youtube className="w-4 h-4" />
+                    )}
+                    Upload to YouTube
+                  </Button>
+                )
+              )}
+            </div>
             {session.mode === "audio" ? (
               <audio
                 src={session.mediaUrl}

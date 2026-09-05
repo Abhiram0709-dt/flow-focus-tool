@@ -10,6 +10,7 @@ import analysisRoutes from "./routes/analysis.js";
 import sessionsRoutes from "./routes/sessions.js";
 import settingsRoutes from "./routes/settings.js";
 import authRoutes from "./routes/auth.js";
+import youtubeRoutes from "./routes/youtube.js";
 
 const app = express();
 
@@ -75,6 +76,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/analysis", analysisRoutes);
 app.use("/api/sessions", sessionsRoutes);
 app.use("/api/settings", settingsRoutes);
+app.use("/api/youtube", youtubeRoutes);
 
 const start = async () => {
   await connectDB();

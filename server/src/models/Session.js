@@ -21,6 +21,11 @@ const SessionSchema = new Schema({
   transcript: { type: String, required: true },
   feedback: { type: FeedbackSchema, required: true },
   createdAt: { type: Date, default: Date.now },
+  youtube: {
+    videoId: { type: String },
+    url: { type: String },
+    uploadedAt: { type: Date },
+  },
 });
 
 export const Session =
