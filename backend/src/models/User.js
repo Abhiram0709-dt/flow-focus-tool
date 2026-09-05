@@ -33,6 +33,13 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  youtube: {
+    refreshToken: { type: String },
+    accessToken: { type: String },
+    accessTokenExpiresAt: { type: Date },
+    channelTitle: { type: String },
+    connectedAt: { type: Date },
+  },
 });
 
 // Hash password before saving (only for local provider)

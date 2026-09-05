@@ -93,3 +93,25 @@ export const getCurrentUser = async () => {
   return data;
 };
 
+// YouTube
+
+export const getYoutubeAuthUrl = async () => {
+  const { data } = await apiClient.get("/youtube/auth-url");
+  return data;
+};
+
+export const getYoutubeStatus = async () => {
+  const { data } = await apiClient.get("/youtube/status");
+  return data;
+};
+
+export const disconnectYoutube = async () => {
+  const { data } = await apiClient.delete("/youtube/disconnect");
+  return data;
+};
+
+export const uploadSessionToYoutube = async (sessionId) => {
+  const { data } = await apiClient.post(`/youtube/upload/${sessionId}`);
+  return data;
+};
+
