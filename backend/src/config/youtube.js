@@ -9,8 +9,8 @@ export const YOUTUBE_UPLOAD_SCOPES = [
 
 export function createYoutubeOAuthClient() {
   return new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_YOUTUBE_CLIENT_ID,
+    process.env.GOOGLE_YOUTUBE_CLIENT_SECRET,
     `${SERVER_URL}/api/youtube/callback`
   );
 }
