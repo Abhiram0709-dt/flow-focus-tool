@@ -1,39 +1,45 @@
 import axios from "axios";
 
-const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
-const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+// Hugging Face Spaces resets TLS connections to any *.cloudflare.com host
+// (confirmed via direct diagnostics), so this backend cannot call
+// Cloudflare's siteverify API directly. Instead it calls a small proxy
+// endpoint (a Vercel serverless function) that makes the real Cloudflare
+// call on its behalf, from a network Cloudflare can actually be reached from.
+const TURNSTILE_PROXY_URL = process.env.TURNSTILE_PROXY_URL;
+const TURNSTILE_PROXY_SECRET = process.env.TURNSTILE_PROXY_SECRET;
 
 export const verifyTurnstileToken = async (
   token,
   remoteip
 ) => {
-  if (!TURNSTILE_SECRET_KEY) {
-    throw new Error("TURNSTILE_SECRET_KEY is not set in environment variables");
+  if (!TURNSTILE_PROXY_URL || !TURNSTILE_PROXY_SECRET) {
+    // eslint-disable-next-line no-console
+    console.warn("TURNSTILE_PROXY_URL/TURNSTILE_PROXY_SECRET not set, allowing request through");
+    return {
+      success: false,
+      networkError: true,
+      "error-codes": ["not_configured"],
+    };
   }
 
-  const payload = {
-    secret: TURNSTILE_SECRET_KEY,
-    response: token,
-    remoteip,
-  };
+  const payload = { token, remoteip };
 
-  // Some hosting environments cannot reach Cloudflare's network at all
-  // (confirmed: TLS handshakes to any *.cloudflare.com host get reset,
-  // while other hosts work fine — a platform-level restriction, not
-  // something a retry or timeout tweak can fix). Distinguish that from an
-  // actual "invalid token" response so an infra outage doesn't block real
-  // logins, while a real rejection from Cloudflare still does.
+  // The proxy itself can occasionally be slow/unreachable; distinguish that
+  // from an actual "invalid token" response so an infra hiccup doesn't block
+  // real logins, while a real rejection from Cloudflare still does.
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     try {
-      const response = await axios.post(TURNSTILE_VERIFY_URL, payload, {
-        headers: { "Content-Type": "application/json" },
+      const response = await axios.post(TURNSTILE_PROXY_URL, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-proxy-secret": TURNSTILE_PROXY_SECRET,
+        },
         timeout: 10000,
-        family: 4,
       });
       return response.data;
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error(`Turnstile verification error (attempt ${attempt})`, error.message);
+      console.error(`Turnstile proxy verification error (attempt ${attempt})`, error.message);
       if (attempt === 2) {
         return {
           success: false,
@@ -44,4 +50,3 @@ export const verifyTurnstileToken = async (
     }
   }
 };
-
