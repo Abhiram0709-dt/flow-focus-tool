@@ -11,29 +11,32 @@ export const verifyTurnstileToken = async (
     throw new Error("TURNSTILE_SECRET_KEY is not set in environment variables");
   }
 
-  try {
-    const response = await axios.post(
-      TURNSTILE_VERIFY_URL,
-      {
-        secret: TURNSTILE_SECRET_KEY,
-        response: token,
-        remoteip,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  const payload = {
+    secret: TURNSTILE_SECRET_KEY,
+    response: token,
+    remoteip,
+  };
 
-    return response.data;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Turnstile verification error", error);
-    return {
-      success: false,
-      "error-codes": ["internal_error"],
-    };
+  // Cloudflare's endpoint can occasionally drop the TLS handshake from
+  // containerized environments; one retry avoids failing real logins on a
+  // transient network blip.
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    try {
+      const response = await axios.post(TURNSTILE_VERIFY_URL, payload, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 8000,
+      });
+      return response.data;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(`Turnstile verification error (attempt ${attempt})`, error.message);
+      if (attempt === 2) {
+        return {
+          success: false,
+          "error-codes": ["internal_error"],
+        };
+      }
+    }
   }
 };
 
