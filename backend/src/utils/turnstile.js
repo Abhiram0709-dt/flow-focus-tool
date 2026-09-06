@@ -24,7 +24,8 @@ export const verifyTurnstileToken = async (
     try {
       const response = await axios.post(TURNSTILE_VERIFY_URL, payload, {
         headers: { "Content-Type": "application/json" },
-        timeout: 8000,
+        timeout: 10000,
+        family: 4,
       });
       return response.data;
     } catch (error) {

@@ -1,4 +1,12 @@
 import "dotenv/config";
+import dns from "node:dns";
+
+// Some container platforms (Hugging Face Spaces included) assign an IPv6
+// address with no working outbound IPv6 route. Without this, every outbound
+// HTTPS call (Turnstile, Cloudinary, Gemini, Google OAuth, Mongo) hangs
+// trying the IPv6 address until it times out before ever falling back to IPv4.
+dns.setDefaultResultOrder("ipv4first");
+
 import express from "express";
 import cors from "cors";
 import session from "express-session";
