@@ -79,6 +79,68 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+// TEMPORARY diagnostic route to pin down the Turnstile connectivity issue.
+// Safe to leave briefly: no secrets exposed, just DNS/connect timing.
+app.get("/api/debug/network-check", async (_req, res) => {
+  const net = await import("node:net");
+  const dnsPromises = await import("node:dns/promises");
+  const axiosMod = (await import("axios")).default;
+
+  const results = {};
+
+  const tcpCheck = (host, port, timeoutMs) =>
+    new Promise((resolve) => {
+      const start = Date.now();
+      const socket = net.connect({ host, port, timeout: timeoutMs });
+      socket.once("connect", () => {
+        resolve({ ok: true, ms: Date.now() - start });
+        socket.destroy();
+      });
+      socket.once("timeout", () => {
+        resolve({ ok: false, reason: "timeout", ms: Date.now() - start });
+        socket.destroy();
+      });
+      socket.once("error", (err) => {
+        resolve({ ok: false, reason: err.code || err.message, ms: Date.now() - start });
+      });
+    });
+
+  try {
+    results.dns_cloudflare = await dnsPromises.lookup("challenges.cloudflare.com", { all: true });
+  } catch (e) {
+    results.dns_cloudflare_error = e.message;
+  }
+
+  try {
+    results.dns_huggingface = await dnsPromises.lookup("huggingface.co", { all: true });
+  } catch (e) {
+    results.dns_huggingface_error = e.message;
+  }
+
+  results.tcp_cloudflare_443 = await tcpCheck("challenges.cloudflare.com", 443, 15000);
+  results.tcp_huggingface_443 = await tcpCheck("huggingface.co", 443, 15000);
+  results.tcp_mongodb_443 = await tcpCheck("google.com", 443, 15000);
+
+  const axiosStart = Date.now();
+  try {
+    const r = await axiosMod.post(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      { secret: "1x0000000000000000000000000000000AA", response: "test" },
+      { headers: { "Content-Type": "application/json" }, timeout: 20000 }
+    );
+    results.axios_cloudflare = { ok: true, ms: Date.now() - axiosStart, status: r.status, data: r.data };
+  } catch (e) {
+    results.axios_cloudflare = {
+      ok: false,
+      ms: Date.now() - axiosStart,
+      code: e.code,
+      message: e.message,
+    };
+  }
+
+  res.json(results);
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/analysis", analysisRoutes);
