@@ -17,6 +17,12 @@ export const verifyTurnstile = async (
       req.ip || req.socket.remoteAddress
     );
 
+    if (result.networkError) {
+      // eslint-disable-next-line no-console
+      console.warn("Turnstile verifier unreachable, allowing request through");
+      return next();
+    }
+
     if (!result.success) {
       return res.status(400).json({
         message: "Turnstile verification failed",
