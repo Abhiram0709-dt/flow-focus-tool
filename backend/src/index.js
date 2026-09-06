@@ -121,6 +121,16 @@ app.get("/api/debug/network-check", async (_req, res) => {
   results.tcp_huggingface_443 = await tcpCheck("huggingface.co", 443, 15000);
   results.tcp_mongodb_443 = await tcpCheck("google.com", 443, 15000);
 
+  const httpsGetCheck = async (url, timeoutMs) => {
+    const start = Date.now();
+    try {
+      const r = await axiosMod.get(url, { timeout: timeoutMs });
+      return { ok: true, ms: Date.now() - start, status: r.status };
+    } catch (e) {
+      return { ok: false, ms: Date.now() - start, code: e.code, message: e.message };
+    }
+  };
+
   const axiosStart = Date.now();
   try {
     const r = await axiosMod.post(
@@ -137,6 +147,13 @@ app.get("/api/debug/network-check", async (_req, res) => {
       message: e.message,
     };
   }
+
+  // Full TLS+HTTP GETs against other hosts, to tell apart "generic MTU
+  // blackhole for any sizable TLS response" from "something specific to
+  // Cloudflare's endpoint/IP range".
+  results.https_get_huggingface = await httpsGetCheck("https://huggingface.co", 20000);
+  results.https_get_google = await httpsGetCheck("https://www.google.com", 20000);
+  results.https_get_cloudflare_root = await httpsGetCheck("https://www.cloudflare.com", 20000);
 
   res.json(results);
 });
