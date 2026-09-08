@@ -19,11 +19,18 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 errors (unauthorized)
+// Handle 401 errors (unauthorized) - but not for the login/signup requests
+// themselves, since a wrong password there is an expected, recoverable error
+// the caller shows as a toast, not a sign of a stale session to force-logout.
+const AUTH_ENDPOINTS = ["/auth/login", "/auth/signup"];
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isAuthEndpoint = AUTH_ENDPOINTS.some((path) =>
+      error.config?.url?.endsWith(path)
+    );
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       window.location.href = "/login";
