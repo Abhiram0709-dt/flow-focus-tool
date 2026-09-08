@@ -24,17 +24,19 @@ A modern web application for improving spoken communication skills through AI-po
 - Axios for API calls
 
 ### Backend
-- Node.js + Express
-- MongoDB + Mongoose
-- Passport.js for OAuth
+- Python + FastAPI
+- MongoDB (via Motor, the async driver)
+- OAuth (Google, GitHub, Facebook, LinkedIn)
 - JWT for authentication
 - Cloudinary for media storage
 - Google Gemini AI for feedback generation
+- YouTube Data API v3 for the YouTube-upload feature
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ installed
+- Node.js 18+ installed (frontend)
+- Python 3.11+ installed (backend)
 - MongoDB instance (local or Atlas)
 - Cloudinary account
 - Google Gemini API key
@@ -52,9 +54,11 @@ cd frontend
 npm install
 cd ..
 
-# Install backend dependencies
+# Set up the backend's virtual environment
 cd backend
-npm install
+python -m venv .venv
+./.venv/Scripts/pip install -r requirements.txt   # Windows
+# source .venv/bin/activate && pip install -r requirements.txt   # macOS/Linux
 cd ..
 ```
 
@@ -67,9 +71,9 @@ cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
 ```
 
-`backend/generate-secrets.js` can generate random `JWT_SECRET`/`SESSION_SECRET` values:
+`backend/generate_secrets.py` can generate a random `JWT_SECRET`:
 ```bash
-node backend/generate-secrets.js
+python backend/generate_secrets.py
 ```
 
 ### Running the Application
@@ -77,7 +81,8 @@ node backend/generate-secrets.js
 ```bash
 # Terminal 1: backend
 cd backend
-npm run dev
+./.venv/Scripts/python -m uvicorn src.main:app --reload --port 5000   # Windows
+# source .venv/bin/activate && uvicorn src.main:app --reload --port 5000   # macOS/Linux
 
 # Terminal 2: frontend
 cd frontend
@@ -136,13 +141,14 @@ frontend/
 
 backend/
 ├── src/
-│   ├── config/               # db, passport, cloudinary
+│   ├── config/               # db, oauth_providers, youtube, cloudinary_config
 │   ├── controllers/
-│   ├── middleware/
-│   ├── models/                # User, Session, Settings
+│   ├── middleware/            # auth.py (JWT dependency)
+│   ├── models/                # user, session, settings (Motor collections)
 │   ├── routes/
-│   └── index.js
-├── package.json
+│   └── main.py
+├── requirements.txt
+├── generate_secrets.py
 └── .env.example
 ```
 

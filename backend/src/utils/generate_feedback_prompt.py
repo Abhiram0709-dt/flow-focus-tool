@@ -1,9 +1,5 @@
-export const generateFeedbackPrompt = (
-  transcript,
-  durationSeconds,
-  topic
-) => {
-  return `
+def generate_feedback_prompt(transcript: str, duration_seconds: float, topic: str) -> str:
+    return f"""
 You are an expert communication coach. Analyze the following practice session and return STRICT JSON only.
 
 Requirements:
@@ -13,21 +9,19 @@ Requirements:
 - Provide a short, encouraging message tailored to the speaker.
 
 Return a JSON object with exactly this shape:
-{
+{{
   "fluencyScore": number (0-10),
   "clarityScore": number (0-10),
   "confidenceScore": number (0-10),
   "fillerWords": string[],
   "suggestions": string,
   "encouragement": string
-}
+}}
 
 Context:
-- Topic: ${topic}
-- Duration (seconds): ${durationSeconds}
+- Topic: {topic}
+- Duration (seconds): {duration_seconds}
 
 Transcript:
-${transcript}
-`;
-};
-
+{transcript}
+"""

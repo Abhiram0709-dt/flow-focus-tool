@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Python (backend)
+.venv
+__pycache__
+*.pyc
+
 # Environment variables (keep real .env* files out of git; templates are allowed)
 .env*
 !.env.example
