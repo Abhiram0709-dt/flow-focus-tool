@@ -13,6 +13,7 @@ A modern web application for improving spoken communication skills through AI-po
 - **⚙️ Customizable Settings**: Adjust focus areas and preferences
 - **🔐 Secure Authentication**: Login with Google or GitHub OAuth
 - **☁️ Cloud Storage**: Media files stored securely on Cloudinary
+- **▶️ YouTube Upload**: Upload a recorded video session to YouTube as unlisted, straight from its detail page
 
 ## 🛠️ Tech Stack
 
@@ -93,33 +94,49 @@ Visit `http://localhost:8080` (or `http://localhost:5173`, depending on your Vit
 
 ## 📦 Deployment
 
-See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for comprehensive deployment instructions.
+This project deploys via each platform's CLI, not GitHub push-to-deploy integrations.
 
-### Quick Deploy
+**Frontend (Vercel)** — project `flow-focus-tool`, live at `https://flow-focus-tool.vercel.app`:
+```bash
+cd frontend
+vercel --prod
+```
+Also hosts `frontend/api/turnstile-verify.js`, a serverless function used to proxy Turnstile verification for the backend (see below).
 
-**Frontend (Vercel):**
-1. Connect your GitHub repository to Vercel
-2. Set the project's Root Directory to `frontend`
-3. Set environment variables
-4. Deploy automatically on push to main
+**Backend (Hugging Face Space, Docker)** — space `MAbhiram/flow-focus-app`, live at `https://mabhiram-flow-focus-app.hf.space`. The Space is its own separate git repository (not this GitHub repo); its `Dockerfile` expects the backend source under a `server/` folder at the Space repo's root. To deploy:
+```bash
+git clone https://huggingface.co/spaces/MAbhiram/flow-focus-app hf-space
+rm -rf hf-space/server && mkdir -p hf-space/server
+cp -r backend/requirements.txt backend/generate_secrets.py backend/src hf-space/server/
+cd hf-space && git add -A && git commit -m "Sync backend" && git push origin main
+```
+Environment variables/secrets are configured separately in each platform's dashboard (Vercel → Project Settings → Environment Variables; Hugging Face → Space Settings → Variables and secrets) — see `backend/.env.example` and `frontend/.env.example` for what's needed.
 
-**Backend (Render/Railway):**
-1. Connect your GitHub repository
-2. Set root directory to `backend`
-3. Configure environment variables
-4. Deploy
+### Known platform quirk: Hugging Face Spaces blocks Cloudflare
+
+Hugging Face Spaces resets outbound TLS connections to any `*.cloudflare.com` host (confirmed via direct diagnostics — other hosts like `google.com` and `huggingface.co` connect instantly). Since Cloudflare Turnstile verification requires calling `challenges.cloudflare.com`, the backend can't verify tokens directly. Instead it calls `frontend/api/turnstile-verify.js` on Vercel (whose network isn't blocked), authenticated via a shared `TURNSTILE_PROXY_SECRET`. If the proxy is ever unreachable, verification fails open (login is allowed through with a warning logged) rather than blocking every login.
 
 ### Required OAuth Setup for Production
 
-#### Google OAuth
-1. Go to Google Cloud Console
-2. Create OAuth credentials
-3. Add production callback URL: `https://your-backend.onrender.com/api/auth/google/callback`
+This app uses **two separate** Google OAuth clients — one for login, one for the YouTube-upload feature — since the latter requests a sensitive scope best kept isolated.
 
-#### GitHub OAuth  
-1. Go to GitHub Developer Settings
-2. Create OAuth App
-3. Add production callback URL: `https://your-backend.onrender.com/api/auth/github/callback`
+#### Google OAuth (login)
+1. Go to Google Cloud Console → Credentials
+2. Create an OAuth 2.0 Client ID (Web application)
+3. Add Authorized redirect URI: `https://mabhiram-flow-focus-app.hf.space/api/auth/google/callback`
+4. Set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` on the backend
+
+#### Google OAuth (YouTube upload)
+1. Create a **second** OAuth 2.0 Client ID in the same or a different Google Cloud project
+2. Enable the "YouTube Data API v3" for that project
+3. Add Authorized redirect URI: `https://mabhiram-flow-focus-app.hf.space/api/youtube/callback`
+4. Set `GOOGLE_YOUTUBE_CLIENT_ID` / `GOOGLE_YOUTUBE_CLIENT_SECRET` on the backend
+
+#### GitHub OAuth
+1. Go to GitHub Developer Settings → OAuth Apps
+2. Create an OAuth App
+3. Add Authorization callback URL: `https://mabhiram-flow-focus-app.hf.space/api/auth/github/callback`
+4. Set `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` on the backend
 
 ## Project Structure
 
@@ -133,6 +150,8 @@ frontend/
 │   ├── hooks/                # useRecorder, useSessions, useSettings, ...
 │   ├── pages/                # Index, Practice, History, SessionDetail, Settings, Login, ...
 │   └── types/
+├── api/
+│   └── turnstile-verify.js  # Vercel serverless function, proxies Turnstile verification for the backend
 ├── public/
 ├── index.html
 ├── vite.config.js
