@@ -114,6 +114,7 @@ def _download_and_upload(media_url: str, title: str, description: str, creds: Cr
             for chunk in resp.iter_bytes(1024 * 1024):
                 tmp.write(chunk)
 
+    media = None
     try:
         if creds.expired and creds.refresh_token:
             creds.refresh(GoogleAuthRequest())
@@ -133,6 +134,14 @@ def _download_and_upload(media_url: str, title: str, description: str, creds: Cr
             _, response = request.next_chunk()
         return response
     finally:
+        # MediaFileUpload keeps its own handle on the file open for the whole
+        # upload; on Windows (unlike POSIX) you can't delete a file that
+        # still has an open handle, so close it explicitly first.
+        if media is not None:
+            try:
+                media.stream().close()
+            except Exception:
+                pass
         os.remove(tmp_path)
 
 
