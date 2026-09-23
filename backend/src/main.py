@@ -7,6 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# google-auth-oauthlib's Flow.fetch_token() is strict about the scopes Google
+# actually returns matching the ones requested byte-for-byte. Google commonly
+# reorders them or tacks on an extra implicit scope, which otherwise raises a
+# scope-mismatch error even though the token itself is fine.
+os.environ.setdefault("OAUTHLIB_RELAX_TOKEN_SCOPE", "1")
+
 # Some container platforms (Hugging Face Spaces included) assign an IPv6
 # address with no working outbound IPv6 route. Without this, every outbound
 # HTTPS call (Turnstile, Cloudinary, Gemini, Google OAuth, Mongo) can hang
