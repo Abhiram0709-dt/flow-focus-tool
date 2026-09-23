@@ -86,10 +86,6 @@ export function SessionListItem({ session, onDelete }) {
               variant="ghost"
               size="icon"
               className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
