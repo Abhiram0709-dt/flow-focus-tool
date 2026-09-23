@@ -79,18 +79,33 @@ python backend/generate_secrets.py
 
 ### Running the Application
 
-```bash
-# Terminal 1: backend
-cd backend
-./.venv/Scripts/python -m uvicorn src.main:app --reload --port 5000   # Windows
-# source .venv/bin/activate && uvicorn src.main:app --reload --port 5000   # macOS/Linux
+Two terminals, run in this order (the frontend's `VITE_API_URL` in `frontend/.env` points at `http://localhost:5000/api`, so the backend must be running on port 5000 for login/API calls to work):
 
-# Terminal 2: frontend
+**Terminal 1 — backend**
+```powershell
+cd backend
+.venv\Scripts\activate
+uvicorn src.main:app --reload --port 5000
+```
+Or without activating the venv first:
+```powershell
+cd backend
+.venv\Scripts\python.exe -m uvicorn src.main:app --reload --port 5000
+```
+macOS/Linux:
+```bash
+cd backend
+source .venv/bin/activate
+uvicorn src.main:app --reload --port 5000
+```
+
+**Terminal 2 — frontend**
+```bash
 cd frontend
 npm run dev
 ```
 
-Visit `http://localhost:8080` (or `http://localhost:5173`, depending on your Vite config) in your browser.
+Then open `http://localhost:8080` (the port `vite.config.js` is set to) in your browser.
 
 ## 📦 Deployment
 
