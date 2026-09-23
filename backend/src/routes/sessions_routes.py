@@ -6,14 +6,14 @@ from ..middleware.auth import authenticate
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
 
-@router.post("/", status_code=201)
+@router.post("", status_code=201)
 async def create_session(
     body: sessions_controller.CreateSessionBody, user_id: str = Depends(authenticate)
 ):
     return await sessions_controller.create_session(user_id, body)
 
 
-@router.get("/")
+@router.get("")
 async def get_sessions(user_id: str = Depends(authenticate)):
     return await sessions_controller.get_sessions(user_id)
 
