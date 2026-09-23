@@ -13,7 +13,7 @@ A modern web application for improving spoken communication skills through AI-po
 - **⚙️ Customizable Settings**: Adjust focus areas and preferences
 - **🔐 Secure Authentication**: Login with Google or GitHub OAuth
 - **☁️ Cloud Storage**: Media files stored securely on Cloudinary
-- **▶️ YouTube Upload**: Upload a recorded video session to YouTube as unlisted, straight from its detail page
+- **▶️ YouTube Upload**: Upload a recorded video session to YouTube as private, straight from its detail page
 
 ## 🛠️ Tech Stack
 

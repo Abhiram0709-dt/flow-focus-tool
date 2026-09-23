@@ -248,8 +248,8 @@ export default function Settings() {
                   <h3 className="font-semibold text-foreground">YouTube</h3>
                   <p className="text-sm text-muted-foreground mt-1">
                     {youtubeStatus?.connected
-                      ? `Connected${youtubeStatus.channelTitle ? ` as ${youtubeStatus.channelTitle}` : ""}. Video sessions can be uploaded as unlisted videos.`
-                      : "Connect your YouTube account to upload your recorded video sessions as unlisted videos."}
+                      ? `Connected${youtubeStatus.channelTitle ? ` as ${youtubeStatus.channelTitle}` : ""}. Video sessions can be uploaded as private videos.`
+                      : "Connect your YouTube account to upload your recorded video sessions as private videos."}
                   </p>
                 </div>
               </div>

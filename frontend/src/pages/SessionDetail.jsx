@@ -67,7 +67,7 @@ export default function SessionDetail() {
     try {
       const youtube = await uploadSessionToYoutube(session._id);
       setSession((prev) => ({ ...prev, youtube }));
-      toast.success("Uploaded to YouTube as an unlisted video!");
+      toast.success("Uploaded to YouTube as a private video!");
     } catch (error) {
       if (error?.response?.data?.code === "YOUTUBE_NOT_CONNECTED") {
         toast.error("Connect your YouTube account first", {

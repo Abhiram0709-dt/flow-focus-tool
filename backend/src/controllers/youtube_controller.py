@@ -125,7 +125,7 @@ def _download_and_upload(media_url: str, title: str, description: str, creds: Cr
             part="snippet,status",
             body={
                 "snippet": {"title": title[:100], "description": description},
-                "status": {"privacyStatus": "unlisted"},
+                "status": {"privacyStatus": "private"},
             },
             media_body=media,
         )
